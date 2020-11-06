@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fh.dao.OrderMapper" >
+
+    <!--映射管理器，是Mybatis中最强大的工具，使用其可以进行实体类之间的关系，并管理结果和实体类间的映射关系
+需要配置的属性：<resultMap id="" type="  "></resutlMap>   id=" " >>>表示这个映射管理器的唯一标识，外部通过该值引用； type = "">>> 表示需要映射的实体类；
+需要配置的参数：<id column = " " property= " " />    <id>标签指的是：结果集中结果唯一的列【column】 和 实体属性【property】的映射关系，注意：<id>标签管理
+的列未必是主键列，
+需要根据具体需求指定；<result column= " " property=" " />  <result>标签指的是：结果集中普通【column】 和 实体属性【property】的映射关系；
+需要维护的关系：所谓关系维护是值在主表查询时将其关联子表的结果也查询出来-->
+    <resultMap id="orderMap" type="com.fh.entity.OrderInfo">
+        <id column="id" property="id"></id>
+        <result column="order_num" property="orderNum"></result>
+        <result column="create_Date" property="createDate" jdbcType="TIMESTAMP"></result>
+        <result column="" property="money"></result>
+    </resultMap>
+
+    <!--通过该标签可定义能复用的sql语句片段，在执行sql语句标签中直接引用即可。这样既可以提高编码效率，
+    还能有效简化代码，提高可读性，  需要配置的属性：id="" >>>表示需要改sql语句片段的唯一标识引用：
+    通过<include refid="" />标签引用，refid="" 中的值指向需要引用的<sql>中的id=“”属性 -->
+    <sql id="orderSql">
+        id,order_num,create_Date,money
+    </sql>
+
+    <select id="queryOrder" resultMap="orderMap">
+            select <include refid="orderSql"/> from orders limit #{start},#{pageSize}
+    </select>
+
+    <!--条件判断标签，配置属性test=" 条件字符串 "，判断是否满足条件，满足则执行，不满足则跳过-->
+    <select id="queryOrder1" resultMap="orderMap">
+            select <include refid="orderSql"/> from orders
+            /*使用其可以代替sql语句中的where关键字，一般防止在条件查询的最外层*/
+            <where>
+                <if test="num == 2 and num != null and num != '' ">
+                    and order_num=#{num}
+                </if>
+                <if test="money == 333 and money != null and money != '' ">
+                    or money=#{money}
+                </if>
+            </where>
+    </select>
+
+    <!--choose标签组也是一个用于条件判断的标签组，和<if>的不同之处在于条件从<choose>进入，
+    去匹配<when>中的添加，一旦匹配马上结束；若到找不到匹配项，将执行<other>中的语句；
+    可以理解为<if>是 && 关系 <choose>是 || 关系，中间的<when></when>可以根据情况添加多组，执行效果类似swich case。-->
+    <select id="queryOrder2" resultMap="orderMap">
+        select <include refid="orderSql"/> from orders
+        /*使用其可以代替sql语句中的where关键字，一般防止在条件查询的最外层*/
+        <where>
+            <choose>
+                <when test="num == 2 and num != null and num != '' ">
+                    and order_num=#{num}
+                </when>
+                <when test="money == 333 and money != null and money != '' ">
+                    or money=#{money}
+                </when>
+                <otherwise>
+                    /*如果以上条件都不符合 就走这里面*/
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <delete id="deleteOrder">
+        delete from orders where id in
+        /*该标签的作用是遍历集合类型的条件 ,类似与Angular中的*ngFor指令
+        属性：collection=“array” / collection = “list”  ----->是数组类型，还是集合类型     item=“ productId ”------> 参数名
+        open="(" separator="," close=")"  ------>开始符号，分隔符号，结束符号
+        index=“ ” ---->结束下标位置，不配置该参数时，默认为全部遍历*/
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updateOrder">
+         update orders
+        <set>
+            <if test='order.orderNum=="1"'>
+                order_num=#{order.orderNum},
+            </if>
+            <if test="order.money==555">
+                money=#{order.money}
+            </if>
+        </set>
+        where id=#{order.id}
+    </update>
+
+</mapper>

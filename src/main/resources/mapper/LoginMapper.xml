@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fh.dao.LoginMapper">
+  <resultMap id="BaseResultMap" type="com.fh.entity.LoginInfo" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="userName" property="userName" jdbcType="VARCHAR" />
+    <result column="userPwd" property="userPwd" jdbcType="VARCHAR" />
+    <result column="realName" property="realName" jdbcType="VARCHAR" />
+    <result column="loginTime" property="loginTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id,userName,userPwd,realName,loginTime
+  </sql>
+  
+  <!-- 查询所有 -->
+  <select id="queryLogin" resultMap = "BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include> 
+  	from l_login
+  </select>
+  
+  <!-- 查询所有地区 -->
+  <select id="queryArea" resultType = "com.fh.entity.AreaInfo">
+  	select id,pid,name,type from city
+  </select>
+  
+  <!-- 通过名称查询 -->
+  <select id="queryLoginByUserName" resultMap = "BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include> 
+  	from l_login where userName = #{userName} 
+  </select>
+  
+  <!-- 总条数 -->
+  <select id="totalNumber" resultType = "java.lang.Integer">
+  	select count(*) from l_login 
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="pagingQueryLogin" resultMap = "BaseResultMap">
+  	select
+  	<include refid="Base_Column_List"></include>
+  	from l_login
+	limit #{0},#{1}
+  </select>
+  
+  <!-- 新增 -->
+  <insert id="saveLogin" parameterType = "com.fh.entity.LoginInfo">
+  	insert into l_login (id, userName, userPwd, realName, loginTime) values(UUID(), #{userName}, #{userPwd}, #{realName}, #{loginTime})
+  </insert>
+  
+  <!-- 删除 -->
+  <delete id="deleteLogin" parameterType = "java.lang.String">
+  	delete from l_login where id = #{id}
+  </delete>
+  
+  <!-- 回显 -->
+  <select id="toUpdateLogin" parameterType = "java.lang.String" resultType = "com.fh.entity.LoginInfo">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from l_login where id = #{id}
+  </select>
+  
+  <!-- 修改 -->
+  <update id="updateLogin" parameterType = "com.fh.entity.LoginInfo">
+  	update l_login set 
+  	<if test="userName != null and userName != ''">
+  		USERNAME = #{userName},
+  	</if>
+  	<if test="userPwd != null and userPwd != ''">
+  		USERPWD = #{userPwd},
+  	</if>
+  	<if test="realName != null and realName != ''">
+  		REALNAME = #{realName},
+  	</if>
+  	<if test="loginTime != null and loginTime != ''">
+  		LOGINTIME = #{loginTime}
+  	</if>
+  	where id = #{id}
+  </update>
+  
+</mapper>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fh.dao.ProductMapper" >
+  <resultMap id="BaseResultMap" type="com.fh.entity.ProductInfo" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="productName" property="productName" jdbcType="VARCHAR" />
+    <result column="mainImagePath" property="mainImagePath" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DOUBLE" />
+    <result column="createDate" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="brandid" property="brandid" jdbcType="VARCHAR" />
+    <result column="brandName" property="brandName" jdbcType="VARCHAR" />
+    <result column="provinceId" property="provinceId" jdbcType="INTEGER" />
+    <result column="cityId" property="cityId" jdbcType="INTEGER" />
+    <result column="countyId" property="countyId" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+  	id, productName, mainImagePath, price, createDate, brandid, provinceId, cityId, countyId, address
+  </sql>
+  
+  <!-- 通过pid查询地区 -->
+  <select id="getAllAreaByPid" parameterType = "java.lang.Integer" resultType = "com.fh.entity.AreaInfo">
+  	select 
+  	id,pid,name,type
+  	from city where pid = #{pid}
+  </select>
+  
+  <!-- 通过名称查询 -->
+  <!-- <select id="queryProductByUserName" resultMap = "BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include> 
+  	from p_product where productName = #{productName} 
+  </select> -->
+  
+  <!-- 总条数 -->
+  <select id="totalNumber" resultType = "java.lang.Integer"> 
+  	select count(*) from p_product 
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="pagingQueryProduct" resultMap = "BaseResultMap">
+  	select 
+  	p.id as id, p.productName as productName, p.mainImagePath as mainImagePath, p.price as price, b.brandName as brandName, p.createDate as createDate, provinceId, cityId, countyId, address 
+  	from p_product p 
+  	left join b_brand b on p.brandid = b.id 
+  	left join city c on p.provinceId = c.id
+	left join city c on p.cityId = c.id
+	left join city c on p.countyId = c.id
+  	limit #{0},#{1} 
+  </select>
+  
+  <!-- 查询品牌 -->
+  <select id="showBrand" resultType = "com.fh.entity.BrandInfo">
+  	select id,brandName from b_brand
+  </select>
+  
+  <!-- 新增 -->
+  <insert id="saveProduct" parameterType = "com.fh.entity.ProductInfo">
+  	insert into p_product (<include refid="Base_Column_List"></include>) values(UUID(), #{productName}, #{mainImagePath}, #{price}, #{createDate}, #{brandid}, #{provinceId}, #{cityId}, #{countyId}, #{address})
+  </insert>
+  
+  <!-- 删除 -->
+  <delete id="deleteProduct" parameterType = "java.lang.String">
+  	delete from p_product where id = #{id}
+  </delete>
+  
+  <!-- 回显 -->
+  <select id="toUpdateProduct" parameterType = "java.lang.String" resultType = "com.fh.entity.ProductInfo">
+  	select 
+  	p.id as id, p.productName as productName, p.mainImagePath as mainImagePath, p.price as price, b.brandName as brandName, p.createDate as createDate, provinceId, cityId, countyId, address 
+  	from p_product p left join b_brand b on p.brandid = b.id where p.id = #{id} 
+  </select>
+  
+  <!-- 修改 -->
+  <update id="updateProduct" parameterType = "com.fh.entity.ProductInfo">
+  	update p_product set 
+  	<if test="productName != null and productName != ''">
+  		PRODUCTNAME = #{productName},
+  	</if>
+  	<if test="mainImagePath != null and mainImagePath != ''">
+  		MAINIMAGEPATH = #{mainImagePath},
+  	</if>
+  	<if test="price != null and price != ''">
+  		PRICE = #{price},
+  	</if>
+  	<if test="brandid != null and brandid != ''">
+  		BRANDID = #{brandid}
+  	</if>
+  	where id = #{id}
+  	
+  </update>
+  
+  
+</mapper>
