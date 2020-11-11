@@ -2,6 +2,8 @@ package com.fh.controller;
 
 import com.fh.entity.OrderInfo;
 import com.fh.service.OrderService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +25,13 @@ public class OrderController {
 
     @RequestMapping("queryOrder")
     @ResponseBody
-    public List<OrderInfo> queryOrder(int start, int pageSize){
-        return orderService.queryOrder(start,pageSize);
+    public String queryOrder(@RequestParam(value = "start",defaultValue = "0") int start,@RequestParam(value = "pageSize",defaultValue = "3") int pageSize){
+        //利用PageHelper分页查询 注意：这个一定要放查询语句的前一行,否则无法进行分页,因为它对紧随其后第一个sql语句有效
+        PageHelper.startPage(start, pageSize);
+        List<OrderInfo> orderInfos=orderService.queryOrder();
+        PageInfo<OrderInfo> pageInfo = new PageInfo<OrderInfo>(orderInfos);
+
+        return "总:  "+pageInfo.getTotal()+"当前:  "+pageInfo.getPageSize()+"每页:  "+pageInfo.getSize();
     }
 
 

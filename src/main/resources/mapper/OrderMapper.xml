@@ -23,7 +23,7 @@
     </sql>
 
     <select id="queryOrder" resultMap="orderMap">
-            select <include refid="orderSql"/> from orders limit #{start},#{pageSize}
+            select <include refid="orderSql"/> from orders
     </select>
 
     <!--条件判断标签，配置属性test=" 条件字符串 "，判断是否满足条件，满足则执行，不满足则跳过-->

@@ -15,8 +15,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderMapper orderMapper;
 
-    public List<OrderInfo> queryOrder(int start, int pageSize) {
-        return orderMapper.queryOrder(start,pageSize);
+    public List<OrderInfo> queryOrder() {
+        return orderMapper.queryOrder();
     }
 
     public List<OrderInfo> queryOrder1(String num, BigDecimal money) {

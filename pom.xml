@@ -25,6 +25,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- 引入mybatis的 pagehelper 分页插件 -->
+    <dependency>
+      <groupId>com.github.pagehelper</groupId>
+      <artifactId>pagehelper</artifactId>
+      <version>5.1.2</version>
+    </dependency>
+
     <!--不用生成 get set-->
     <dependency>
       <groupId>org.projectlombok</groupId>

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface OrderMapper {
-    List<OrderInfo> queryOrder(@Param("start")int start,@Param("pageSize")int pageSize);
+    List<OrderInfo> queryOrder();
 
     List<OrderInfo> queryOrder1(@Param("num")String num,@Param("money")BigDecimal money);
 
